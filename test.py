@@ -43,19 +43,19 @@ model = Pix2Pix(
     beta2=PARAMS["beta2"],
 )
 
-total_params = sum(p.numel() for p in model.gen.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.gen.parameters() if p.requires_grad
-)
-print("Generator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
+# total_params = sum(p.numel() for p in model.gen.parameters())
+# total_trainable_params = sum(
+#     p.numel() for p in model.gen.parameters() if p.requires_grad
+# )
+# print("Generator:")
+# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
 
-total_params = sum(p.numel() for p in model.disc.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.disc.parameters() if p.requires_grad
-)
-print("Discriminator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
+# total_params = sum(p.numel() for p in model.disc.parameters())
+# total_trainable_params = sum(
+#     p.numel() for p in model.disc.parameters() if p.requires_grad
+# )
+# print("Discriminator:")
+# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
 
 gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
 model.gen.load_state_dict(
