@@ -91,9 +91,7 @@ def scale_and_convert(tensor):
 
 
 # Function to visualize the images and metrics
-def plot_images_and_metrics(
-    num_images, input_image, real_target, generated_target, save_path
-):
+def plot_images_and_metrics(num_images, input_image, real_target, generated_target):
     input_image = input_image[:num_images]
     real_target = real_target[:num_images]
     generated_target = generated_target[:num_images]
@@ -139,7 +137,8 @@ def plot_images_and_metrics(
         axes[i, 3].axis("off")
 
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.show()
+    plt.savefig("output.png")
     plt.close(fig)
 
 
@@ -149,7 +148,5 @@ real_images, target_images = real_images.to(DEVICE), target_images.to(DEVICE)
 out = model.get_current_visuals(real_images, target_images)
 real_images, target_images, generated_images = out["real"], out["target"], out["fake"]
 
-# Save the outputs to a file
-plot_images_and_metrics(
-    5, real_images, target_images, generated_images, "output_images_with_metrics.png"
-)
+# Display the outputs
+plot_images_and_metrics(5, real_images, target_images, generated_images)
