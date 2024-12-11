@@ -42,15 +42,16 @@ total_params = sum(p.numel() for p in model.gen.parameters())
 total_trainable_params = sum(
     p.numel() for p in model.gen.parameters() if p.requires_grad
 )
-print("Generator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
+# print("Generator:")
+# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
 
 total_params = sum(p.numel() for p in model.disc.parameters())
 total_trainable_params = sum(
     p.numel() for p in model.disc.parameters() if p.requires_grad
 )
-print("Discriminator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
+# print("Discriminator:")
+# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
+
 model.to(DEVICE)
 
 model = torch.compile(model)
