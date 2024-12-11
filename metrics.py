@@ -1,6 +1,7 @@
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 import numpy as np
+import cv2
 
 
 def calculate_psnr(real_image, generated_image):
@@ -9,12 +10,22 @@ def calculate_psnr(real_image, generated_image):
     )
 
 
-def calculate_ssim(real_image, generated_image):
-    score, _ = ssim(
-        real_image,
-        generated_image,
-        multichannel=True,
-        full=True,
+def calculate_ssim(original, generated):
+    # Ensure images are resized to at least 7x7
+    min_size = max(7, max(original.shape[0], original.shape[1]))
+    original_resized = cv2.resize(original, (min_size, min_size))
+    generated_resized = cv2.resize(generated, (min_size, min_size))
+
+    # Calculate data range
+    data_range = original_resized.max() - original_resized.min()
+
+    # Compute SSIM
+    score = ssim(
+        original_resized,
+        generated_resized,
+        data_range=data_range,
+        win_size=7,
+        channel_axis=-1,
     )
     return score
 
