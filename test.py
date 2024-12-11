@@ -73,7 +73,7 @@ print("Loaded succesfully!")
 
 
 root_dir = "v_2"
-split_save_path = "/kaggle/working/split.json"
+split_save_path = "split.json"
 # Load the custom dataset
 train_transforms = v2.Compose(
     [
