@@ -1,13 +1,12 @@
 import torch
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from torchvision import transforms
 from torchvision.transforms import v2
 from pix import Pix2Pix
 from split import Sentinel
 from torch.utils.data import DataLoader
-
+from metrics import calculate_psnr, calculate_ssim, calculate_sam
 
 PARAMS = {
     "netD": "patch",
@@ -43,20 +42,6 @@ model = Pix2Pix(
     beta2=PARAMS["beta2"],
 )
 
-# total_params = sum(p.numel() for p in model.gen.parameters())
-# total_trainable_params = sum(
-#     p.numel() for p in model.gen.parameters() if p.requires_grad
-# )
-# print("Generator:")
-# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
-
-# total_params = sum(p.numel() for p in model.disc.parameters())
-# total_trainable_params = sum(
-#     p.numel() for p in model.disc.parameters() if p.requires_grad
-# )
-# print("Discriminator:")
-# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
-
 gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
 model.gen.load_state_dict(
     torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
@@ -70,7 +55,6 @@ model.disc.load_state_dict(
 model.to(DEVICE)
 model.eval()
 print("Loaded succesfully!")
-
 
 root_dir = "/content/v_2"
 split_save_path = "meta.json"
@@ -106,8 +90,10 @@ def scale_and_convert(tensor):
     )  # Ensures values are within [0, 1] and move to CPU
 
 
-# Function to visualize the images
-def plot_images(num_images, input_image, real_target, generated_target, save_path):
+# Function to visualize the images and metrics
+def plot_images_and_metrics(
+    num_images, input_image, real_target, generated_target, save_path
+):
     input_image = input_image[:num_images]
     real_target = real_target[:num_images]
     generated_target = generated_target[:num_images]
@@ -117,25 +103,40 @@ def plot_images(num_images, input_image, real_target, generated_target, save_pat
     real_target = scale_and_convert(real_target)
     generated_target = scale_and_convert(generated_target)
 
-    fig, axes = plt.subplots(3, num_images, figsize=(num_images * 3, 9))
+    fig, axes = plt.subplots(num_images, 4, figsize=(20, num_images * 5))
 
     for i in range(num_images):
         # Plot input image
-        axes[0, i].imshow(
+        axes[i, 0].imshow(
             np.transpose(input_image[i], (1, 2, 0))
         )  # Convert from CxHxW to HxWxC
-        axes[0, i].set_title(f"Input {i+1}")
-        axes[0, i].axis("off")
+        axes[i, 0].set_title(f"Input {i+1}")
+        axes[i, 0].axis("off")
 
         # Plot real target image
-        axes[1, i].imshow(np.transpose(real_target[i], (1, 2, 0)))
-        axes[1, i].set_title(f"Real {i+1}")
-        axes[1, i].axis("off")
+        axes[i, 1].imshow(np.transpose(real_target[i], (1, 2, 0)))
+        axes[i, 1].set_title(f"Real {i+1}")
+        axes[i, 1].axis("off")
 
         # Plot generated target image
-        axes[2, i].imshow(np.transpose(generated_target[i], (1, 2, 0)))
-        axes[2, i].set_title(f"Generated {i+1}")
-        axes[2, i].axis("off")
+        axes[i, 2].imshow(np.transpose(generated_target[i], (1, 2, 0)))
+        axes[i, 2].set_title(f"Generated {i+1}")
+        axes[i, 2].axis("off")
+
+        # Calculate and display metrics
+        psnr = calculate_psnr(real_target[i], generated_target[i])
+        ssim = calculate_ssim(real_target[i], generated_target[i])
+        sam = calculate_sam(real_target[i], generated_target[i])
+        metrics_text = f"PSNR: {psnr:.2f}\nSSIM: {ssim:.2f}\nSAM: {sam:.2f}"
+        axes[i, 3].text(
+            0.5,
+            0.5,
+            metrics_text,
+            horizontalalignment="center",
+            verticalalignment="center",
+            fontsize=12,
+        )
+        axes[i, 3].axis("off")
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -149,4 +150,6 @@ out = model.get_current_visuals(real_images, target_images)
 real_images, target_images, generated_images = out["real"], out["target"], out["fake"]
 
 # Save the outputs to a file
-plot_images(5, real_images, target_images, generated_images, "output_images.png")
+plot_images_and_metrics(
+    5, real_images, target_images, generated_images, "output_images_with_metrics.png"
+)
