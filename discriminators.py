@@ -1,5 +1,5 @@
 import torch.nn as nn
-from .blocks import DownsamplingBlock, UpsamplingBlock
+from blocks import DownsamplingBlock, UpsamplingBlock
 
 
 class PixelDiscriminator(nn.Module):

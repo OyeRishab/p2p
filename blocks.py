@@ -40,8 +40,6 @@ class DownsamplingBlock(nn.Module):
 
 
 class UpsamplingBlock(nn.Module):
-    """Defines the Unet upsampling block."""
-
     def __init__(
         self,
         c_in,
