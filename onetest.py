@@ -1,13 +1,12 @@
 import torch
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from torchvision import transforms
 from torchvision.transforms import v2
 from pix import Pix2Pix
 from split import Sentinel
 from torch.utils.data import DataLoader
-
+from PIL import Image
 
 PARAMS = {
     "netD": "patch",
@@ -70,7 +69,6 @@ model.disc.load_state_dict(
 model.to(DEVICE)
 model.eval()
 print("Loaded succesfully!")
-
 
 root_dir = "v_2"
 split_save_path = "split.json"
@@ -150,3 +148,51 @@ real_images, target_images, generated_images = out["real"], out["target"], out["
 
 # Save the outputs to a file
 plot_images(5, real_images, target_images, generated_images, "output_images.png")
+
+
+# Function to load and preprocess a single image
+def load_and_preprocess_image(image_path, transform):
+    image = Image.open(image_path).convert("RGB")
+    image = transform(image)
+    image = image.unsqueeze(0)  # Add batch dimension
+    return image
+
+
+# Define the transform for the input image
+input_transform = v2.Compose(
+    [
+        v2.ToImage(),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize(mean=[0.5], std=[0.5]),
+    ]
+)
+
+# Load and preprocess the input image
+image_path = "path_to_your_image.jpg"
+input_image = load_and_preprocess_image(image_path, input_transform)
+input_image = input_image.to(DEVICE)
+
+# Generate the output using the model
+with torch.no_grad():
+    generated_image = model.gen(input_image)
+
+# Convert the tensors to numpy arrays for visualization
+input_image_np = scale_and_convert(input_image)
+generated_image_np = scale_and_convert(generated_image)
+
+# Plot the input and generated images
+fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+
+# Plot input image
+axes[0].imshow(np.transpose(input_image_np[0], (1, 2, 0)))
+axes[0].set_title("Input Image")
+axes[0].axis("off")
+
+# Plot generated image
+axes[1].imshow(np.transpose(generated_image_np[0], (1, 2, 0)))
+axes[1].set_title("Generated Image")
+axes[1].axis("off")
+
+plt.tight_layout()
+plt.savefig("test_output_image.png")
+plt.close(fig)
