@@ -7,6 +7,7 @@ from pix import Pix2Pix
 from split import Sentinel
 from torch.utils.data import DataLoader
 from PIL import Image
+from metrics import calculate_ssim, calculate_psnr, calculate_sam
 
 PARAMS = {
     "netD": "patch",
@@ -90,42 +91,6 @@ def scale_and_convert(tensor):
     )  # Ensures values are within [0, 1] and move to CPU
 
 
-# Function to visualize the images
-def plot_images(num_images, input_image, real_target, generated_target, save_path):
-    input_image = input_image[:num_images]
-    real_target = real_target[:num_images]
-    generated_target = generated_target[:num_images]
-
-    # Scale and convert tensors to numpy
-    input_image = scale_and_convert(input_image)
-    real_target = scale_and_convert(real_target)
-    generated_target = scale_and_convert(generated_target)
-
-    fig, axes = plt.subplots(3, num_images, figsize=(num_images * 3, 9))
-
-    for i in range(num_images):
-        # Plot input image
-        axes[0, i].imshow(
-            np.transpose(input_image[i], (1, 2, 0))
-        )  # Convert from CxHxW to HxWxC
-        axes[0, i].set_title(f"Input {i+1}")
-        axes[0, i].axis("off")
-
-        # Plot real target image
-        axes[1, i].imshow(np.transpose(real_target[i], (1, 2, 0)))
-        axes[1, i].set_title(f"Real {i+1}")
-        axes[1, i].axis("off")
-
-        # Plot generated target image
-        axes[2, i].imshow(np.transpose(generated_target[i], (1, 2, 0)))
-        axes[2, i].set_title(f"Generated {i+1}")
-        axes[2, i].axis("off")
-
-    plt.tight_layout()
-    plt.savefig(save_path)
-    plt.close(fig)
-
-
 real_images, target_images = next(iter(dataloader))
 real_images, target_images = real_images.to(DEVICE), target_images.to(DEVICE)
 
@@ -153,7 +118,7 @@ input_transform = v2.Compose(
 )
 
 # Load and preprocess the input image
-image_path = "path_to_your_image.jpg"
+image_path = "test.jpg"
 input_image = load_and_preprocess_image(image_path, input_transform)
 input_image = input_image.to(DEVICE)
 
@@ -181,3 +146,13 @@ axes[1].axis("off")
 plt.tight_layout()
 plt.savefig("test_output_image.png")
 plt.close(fig)
+
+# Calculate the SSIM, PSNR, and SAM between the given image and the generated image
+ssim = calculate_ssim(input_image, generated_image)
+psnr = calculate_psnr(input_image, generated_image)
+sam = calculate_sam(input_image, generated_image)
+
+
+print(f"SSIM: {ssim:.4f}")
+print(f"PSNR: {psnr:.4f}")
+print(f"SAM: {sam:.4f}")
