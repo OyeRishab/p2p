@@ -42,20 +42,6 @@ model = Pix2Pix(
     beta2=PARAMS["beta2"],
 )
 
-total_params = sum(p.numel() for p in model.gen.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.gen.parameters() if p.requires_grad
-)
-print("Generator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
-
-total_params = sum(p.numel() for p in model.disc.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.disc.parameters() if p.requires_grad
-)
-print("Discriminator:")
-print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
-
 gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
 model.gen.load_state_dict(
     torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
@@ -147,7 +133,6 @@ out = model.get_current_visuals(real_images, target_images)
 real_images, target_images, generated_images = out["real"], out["target"], out["fake"]
 
 # Save the outputs to a file
-plot_images(5, real_images, target_images, generated_images, "output_images.png")
 
 
 # Function to load and preprocess a single image
