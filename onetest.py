@@ -56,12 +56,12 @@ total_trainable_params = sum(
 print("Discriminator:")
 print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
 
-gen_ckpt = "pix2pix_gen_330.pth"
+gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
 model.gen.load_state_dict(
     torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
 )
 
-disc_ckpt = "pix2pix_disc_330.pth"
+disc_ckpt = "/content/drive/MyDrive/pix2pix_disc_220.pth"
 model.disc.load_state_dict(
     torch.load(disc_ckpt, map_location=DEVICE, weights_only=True), strict=False
 )
@@ -70,8 +70,8 @@ model.to(DEVICE)
 model.eval()
 print("Loaded succesfully!")
 
-root_dir = "v_2"
-split_save_path = "split.json"
+root_dir = "/content/v_2"
+split_save_path = "meta.json"
 # Load the custom dataset
 train_transforms = v2.Compose(
     [
