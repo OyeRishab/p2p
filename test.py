@@ -154,5 +154,10 @@ real_images, target_images, generated_images = out["real"], out["target"], out["
 
 # Save the outputs to a file
 plot_images_and_metrics(
-    5, real_images, target_images, generated_images, "output_images_with_metrics.png"
+    5,
+    real_images,
+    target_images,
+    generated_images,
+    "/content/output_images_with_metrics.png",
 )
+print("Images and metrics saved successfully!")
