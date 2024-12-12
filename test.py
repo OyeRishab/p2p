@@ -94,9 +94,12 @@ def scale_and_convert(tensor):
 def plot_images_and_metrics(
     num_images, input_image, real_target, generated_target, save_path
 ):
-    input_image = input_image[:num_images]
-    real_target = real_target[:num_images]
-    generated_target = generated_target[:num_images]
+    # randomly select a few images
+    indices = np.random.choice(range(len(input_image)), num_images, replace=False)
+
+    input_image = input_image[indices]
+    real_target = real_target[indices]
+    generated_target = generated_target[indices]
 
     # Scale and convert tensors to numpy
     input_image = scale_and_convert(input_image)
