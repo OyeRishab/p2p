@@ -16,7 +16,7 @@ PARAMS = {
     "beta1": 0.5,
     "beta2": 0.999,
     "batch_size": 16,
-    "epochs": 500,
+    "epochs": 300,
     "seed": 42,
 }
 
@@ -37,20 +37,6 @@ model = Pix2Pix(
     beta1=PARAMS["beta1"],
     beta2=PARAMS["beta2"],
 )
-
-total_params = sum(p.numel() for p in model.gen.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.gen.parameters() if p.requires_grad
-)
-# print("Generator:")
-# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
-
-total_params = sum(p.numel() for p in model.disc.parameters())
-total_trainable_params = sum(
-    p.numel() for p in model.disc.parameters() if p.requires_grad
-)
-# print("Discriminator:")
-# print(f"Total params: {total_params}, Total trainable params: {total_trainable_params}")
 
 model.to(DEVICE)
 
@@ -86,9 +72,9 @@ if __name__ == "__main__":
     # Train the model
     num_epochs = PARAMS["epochs"]
     len_batch = len(dataloader)
-    save_freq = 5
+    save_freq = 20
 
-    for epoch in range(181, num_epochs + 1):
+    for epoch in range(0, num_epochs + 1):
         total_lossD = 0.0
         total_lossG = 0.0
         total_lossG_GAN = 0.0
@@ -122,3 +108,4 @@ if __name__ == "__main__":
             model.save_optimizer(
                 gen_opt_path="pix2pix_gen_opt.pth", disc_opt_path="pix2pix_disc_opt.pth"
             )
+            print(f"Model saved at epoch {epoch}")
