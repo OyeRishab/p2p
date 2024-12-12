@@ -4,303 +4,157 @@ import numpy as np
 from torchvision import transforms
 from torchvision.transforms import v2
 from pix import Pix2Pix
-from split import Sentinel
-from torch.utils.data import DataLoader
-from PIL import Image, ImageEnhance
-import os
+from PIL import Image
 import cv2
 
-# Create output directory if it doesn't exist
-OUTPUT_DIR = "generated_images"
-if not os.path.exists(OUTPUT_DIR):
-    os.makedirs(OUTPUT_DIR)
 
-PARAMS = {
-    "netD": "patch",
-    "lambda_L1": 100.0,
-    "is_CGAN": True,
-    "use_upsampling": False,
-    "mode": "nearest",
-    "c_hid": 64,
-    "n_layers": 3,
-    "lr": 0.0002,
-    "beta1": 0.5,
-    "beta2": 0.999,
-    "batch_size": 32,
-    "epochs": 330,
-    "seed": 42,
-}
+def seamless_clone(input_image, generated_image):
+    # Transpose and convert to uint8
+    input_image = (input_image[0].transpose(1, 2, 0) * 255).astype(np.uint8)
+    generated_image = (generated_image[0].transpose(1, 2, 0) * 255).astype(np.uint8)
 
-SEED = PARAMS["seed"]
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-torch.manual_seed(SEED)
+    # Create a mask for blending
+    mask = np.ones(generated_image.shape[:2], dtype=np.uint8) * 255
 
+    # Compute center point
+    height, width = generated_image.shape[:2]
+    center = (width // 2, height // 2)
 
-def load_model():
-    model = Pix2Pix(
-        is_train=True,
-        netD=PARAMS["netD"],
-        lambda_L1=PARAMS["lambda_L1"],
-        is_CGAN=PARAMS["is_CGAN"],
-        use_upsampling=PARAMS["use_upsampling"],
-        mode=PARAMS["mode"],
-        c_hid=PARAMS["c_hid"],
-        n_layers=PARAMS["n_layers"],
-        lr=PARAMS["lr"],
-        beta1=PARAMS["beta1"],
-        beta2=PARAMS["beta2"],
+    # Perform seamless cloning
+    blended = cv2.seamlessClone(
+        src=generated_image,
+        dst=input_image,
+        mask=mask,
+        p=center,
+        flags=cv2.NORMAL_CLONE,
     )
 
-    gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
-    model.gen.load_state_dict(
-        torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
-    )
-
-    disc_ckpt = "/content/drive/MyDrive/pix2pix_disc_220.pth"
-    model.disc.load_state_dict(
-        torch.load(disc_ckpt, map_location=DEVICE, weights_only=True), strict=False
-    )
-
-    model.to(DEVICE)
-    model.eval()
-    print("Model loaded successfully!")
-    return model
+    return blended / 255.0
 
 
-def apply_desert_filter(image_array):
+def divide_image_with_overlap(image, patch_size, overlap):
     """
-    Apply a desert-like filter to the image:
-    - Increase brightness
-    - Add warm tones
-    - Increase saturation
-    - Adjust contrast
+    Divide image into overlapping patches
+
+    Args:
+        image (torch.Tensor): Input image tensor
+        patch_size (int): Size of each patch
+        overlap (int): Overlap between patches
+
+    Returns:
+        list: List of overlapping patches
     """
-    # Convert to PIL Image
-    image = Image.fromarray((image_array * 255).astype(np.uint8))
-
-    # Enhance brightness
-    enhancer = ImageEnhance.Brightness(image)
-    image = enhancer.enhance(1.3)  # Increase brightness by 30%
-
-    # Enhance contrast
-    enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(1.2)  # Increase contrast by 20%
-
-    # Convert to cv2 format for color adjustments
-    image = np.array(image)
-    image_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-
-    # Increase saturation
-    image_hsv[:, :, 1] = image_hsv[:, :, 1] * 1.2  # Increase saturation by 20%
-    image_hsv[:, :, 1] = np.clip(image_hsv[:, :, 1], 0, 255)
-
-    # Shift hue slightly towards yellow/orange
-    image_hsv[:, :, 0] = (image_hsv[:, :, 0] * 0.9 + 20) % 180
-
-    # Convert back to RGB
-    image = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2RGB)
-
-    return image / 255.0
-
-
-def scale_and_convert(tensor):
-    tensor = (tensor + 1) / 2
-    return tensor.clamp(0, 1).cpu().numpy()
-
-
-def load_and_preprocess_image(image_path, transform):
-    image = Image.open(image_path).convert("RGB")
-    image = transform(image)
-    image = image.unsqueeze(0)  # Add batch dimension
-    return image
-
-
-def pad_image_to_multiple(image, multiple):
-    _, _, h, w = image.shape
-    pad_h = (multiple - h % multiple) % multiple
-    pad_w = (multiple - w % multiple) % multiple
-    return torch.nn.functional.pad(image, (0, pad_w, 0, pad_h))
-
-
-def divide_image(image, patch_size):
     patches = []
     _, _, h, w = image.shape
-    for i in range(0, h, patch_size):
-        for j in range(0, w, patch_size):
-            patch = image[:, :, i : i + patch_size, j : j + patch_size]
+
+    for i in range(0, h - overlap, patch_size - overlap):
+        for j in range(0, w - overlap, patch_size - overlap):
+            patch = image[:, :, i : min(i + patch_size, h), j : min(j + patch_size, w)]
             patches.append(patch)
+
     return patches
 
 
-def stitch_images(patches, image_shape, patch_size):
+def stitch_images_with_blend(patches, image_shape, patch_size, overlap):
+    """
+    Stitch patches with smooth blending
+
+    Args:
+        patches (list): List of generated patches
+        image_shape (tuple): Shape of original image
+        patch_size (int): Size of each patch
+        overlap (int): Overlap between patches
+
+    Returns:
+        torch.Tensor: Stitched and blended image
+    """
     _, _, h, w = image_shape
-    stitched_image = torch.zeros((1, 3, h, w), device=patches[0].device)
-    weight_map = torch.zeros((1, 3, h, w), device=patches[0].device)
-    idx = 0
-    rows = h // patch_size
-    cols = w // patch_size
+    stitched_image = torch.zeros((1, 3, h, w))
+    weight_map = torch.zeros((1, 3, h, w))
 
-    # Create a smooth blending mask for each patch
-    y, x = torch.meshgrid(
-        torch.linspace(0, 1, patch_size, device=patches[0].device),
-        torch.linspace(0, 1, patch_size, device=patches[0].device),
-    )
-    mask = (1 - y) * (1 - x) * y * x  # Feathering weights
-    mask = mask.unsqueeze(0).repeat(3, 1, 1)  # Apply to 3 channels (RGB)
+    patch_idx = 0
+    for i in range(0, h - overlap, patch_size - overlap):
+        for j in range(0, w - overlap, patch_size - overlap):
+            patch = patches[patch_idx]
+            patch_h, patch_w = patch.shape[2], patch.shape[3]
 
-    for i in range(rows):
-        for j in range(cols):
-            if idx < len(patches):
-                curr_patch = patches[idx]
-                y_start = i * patch_size
-                x_start = j * patch_size
-                y_end = min((i + 1) * patch_size, h)
-                x_end = min((j + 1) * patch_size, w)
-
-                patch_h = y_end - y_start
-                patch_w = x_end - x_start
-
-                # Blend patch into the stitched image
-                stitched_image[:, :, y_start:y_end, x_start:x_end] += (
-                    curr_patch[:, :, :patch_h, :patch_w] * mask[:, :patch_h, :patch_w]
+            # Create a weight map for smooth blending
+            patch_weight = torch.ones_like(patch)
+            if i > 0:
+                patch_weight[:, :, :overlap, :] *= (
+                    torch.linspace(0, 1, overlap)
+                    .view(1, -1)
+                    .repeat(patch.shape[0], patch.shape[1], 1, patch.shape[3])
                 )
-                weight_map[:, :, y_start:y_end, x_start:x_end] += mask[
-                    :, :patch_h, :patch_w
-                ]
-                idx += 1
+            if j > 0:
+                patch_weight[:, :, :, :overlap] *= (
+                    torch.linspace(0, 1, overlap)
+                    .view(-1, 1)
+                    .repeat(patch.shape[0], patch.shape[1], patch.shape[2], 1)
+                )
 
-    # Normalize to avoid overlapping areas becoming overly bright
-    stitched_image /= weight_map.clamp(min=1e-8)
+            # Update stitched image with weighted patch
+            stitched_image[:, :, i : i + patch_h, j : j + patch_w] += (
+                patch * patch_weight
+            )
+            weight_map[:, :, i : i + patch_h, j : j + patch_w] += patch_weight
+
+            patch_idx += 1
+
+    # Normalize by weight map
+    stitched_image /= weight_map
     return stitched_image
 
 
-def save_image(array, filename):
-    """Save a numpy array as an image."""
-    plt.imsave(filename, array)
+# Main script remains mostly the same, replace divide_image and stitch_images with new functions
+patch_size = 64
+overlap = 16  # Overlap between patches
 
+# Divide the input image into overlapping patches
+patches = divide_image_with_overlap(input_image, patch_size, overlap)
 
-def save_image_with_filter(image_array, filename):
-    """Save both original and filtered versions of the image."""
-    if image_array.ndim == 3:
-        filtered_image = apply_desert_filter(image_array)
-    else:
-        filtered_image = apply_desert_filter(np.transpose(image_array[0], (1, 2, 0)))
+# Generate patches (rest of the generation code remains the same)
+generated_patches = []
+resize_to_256 = transforms.Resize((256, 256))
+resize_to_64 = transforms.Resize((64, 64))
 
-    plt.imsave(filename, filtered_image)
+with torch.no_grad():
+    for patch in patches:
+        resized_patch = resize_to_256(patch)
+        generated_patch = model.gen(resized_patch)
+        downsized_patch = resize_to_64(generated_patch)
+        generated_patches.append(downsized_patch)
 
+# Stitch the generated patches back together with blending
+generated_image = stitch_images_with_blend(
+    generated_patches, input_image.shape, patch_size, overlap
+)
 
-def process_image(image_path, model):
-    # Define the transform for the input image
-    input_transform = v2.Compose(
-        [
-            v2.ToImage(),
-            v2.ToDtype(torch.float32, scale=True),
-            v2.Normalize(mean=[0.5], std=[0.5]),
-        ]
-    )
+# Convert the tensors to numpy arrays for visualization
+input_image_np = scale_and_convert(input_image)
+generated_image_np = scale_and_convert(generated_image)
 
-    # Load and preprocess the input image
-    input_image = load_and_preprocess_image(image_path, input_transform)
-    input_image = input_image.to(DEVICE)
+# Optional: Use seamless cloning for further blending
+blended_image = seamless_clone(input_image_np, generated_image_np)
 
-    # Pad image if necessary
-    input_image = pad_image_to_multiple(input_image, 64)
+# Plot the input and generated images
+fig, axes = plt.subplots(1, 3, figsize=(9, 3))
 
-    # Divide the input image into 64x64 patches
-    patch_size = 64
-    patches = divide_image(input_image, patch_size)
+# Plot input image
+axes[0].imshow(np.transpose(input_image_np[0], (1, 2, 0)))
+axes[0].set_title("Input Image")
+axes[0].axis("off")
 
-    # Resize each patch to 256x256, pass through the model, and downsize back to 64x64
-    generated_patches = []
-    resize_to_256 = transforms.Resize((256, 256))
-    resize_to_64 = transforms.Resize((64, 64))
+# Plot generated image
+axes[1].imshow(np.transpose(generated_image_np[0], (1, 2, 0)))
+axes[1].set_title("Generated Image")
+axes[1].axis("off")
 
-    with torch.no_grad():
-        for patch in patches:
-            if patch.dim() == 3:
-                patch = patch.unsqueeze(0)
-            resized_patch = resize_to_256(patch)
-            generated_patch = model.gen(resized_patch)
-            downsized_patch = resize_to_64(generated_patch)
-            generated_patches.append(downsized_patch)
+# Plot blended image
+axes[2].imshow(blended_image)
+axes[2].set_title("Blended Image")
+axes[2].axis("off")
 
-    # Stitch the generated patches back together
-    generated_image = stitch_images(generated_patches, input_image.shape, patch_size)
-
-    # Convert the tensors to numpy arrays for visualization
-    input_image_np = scale_and_convert(input_image)
-    generated_image_np = scale_and_convert(generated_image)
-
-    return input_image_np, generated_image_np
-
-
-def save_comparison(input_image_np, generated_image_np, output_filename):
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
-
-    # Plot input image
-    axes[0].imshow(np.transpose(input_image_np[0], (1, 2, 0)))
-    axes[0].set_title("Input Image")
-    axes[0].axis("off")
-
-    # Plot generated image without filter
-    axes[1].imshow(np.transpose(generated_image_np[0], (1, 2, 0)))
-    axes[1].set_title("Generated Image (No Filter)")
-    axes[1].axis("off")
-
-    # Apply desert filter and plot
-    filtered_image = apply_desert_filter(np.transpose(generated_image_np[0], (1, 2, 0)))
-    axes[2].imshow(filtered_image)
-    axes[2].set_title("Generated Image (Desert Filter)")
-    axes[2].axis("off")
-
-    plt.tight_layout()
-    plt.savefig(os.path.join(OUTPUT_DIR, f"{output_filename}_comparison.png"))
-    plt.close(fig)
-
-    # Save individual images
-    save_image(
-        np.transpose(input_image_np[0], (1, 2, 0)),
-        os.path.join(OUTPUT_DIR, f"{output_filename}_input.png"),
-    )
-    save_image(
-        np.transpose(generated_image_np[0], (1, 2, 0)),
-        os.path.join(OUTPUT_DIR, f"{output_filename}_generated.png"),
-    )
-    save_image(
-        filtered_image,
-        os.path.join(OUTPUT_DIR, f"{output_filename}_generated_desert.png"),
-    )
-
-
-def main():
-    # Load the model
-    model = load_model()
-
-    # Process single image
-    image_path = "test.jpg"  # Change this to your input image path
-
-    try:
-        # Process the image
-        input_image_np, generated_image_np = process_image(image_path, model)
-
-        # Get the base filename without extension
-        base_filename = os.path.splitext(os.path.basename(image_path))[0]
-
-        # Save the results
-        save_comparison(input_image_np, generated_image_np, base_filename)
-
-        # Save the filtered version separately
-        generated_image_transposed = np.transpose(generated_image_np[0], (1, 2, 0))
-        save_image_with_filter(
-            generated_image_transposed,
-            os.path.join(OUTPUT_DIR, f"{base_filename}_generated_desert_only.png"),
-        )
-
-        print(f"Processing complete! Images saved in {OUTPUT_DIR}/")
-
-    except Exception as e:
-        print(f"Error processing image: {str(e)}")
-
-
-if __name__ == "__main__":
-    main()
+plt.tight_layout()
+plt.savefig("test_output_image.png")
+plt.close(fig)
