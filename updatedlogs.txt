@@ -240,7 +240,21 @@ Epoch [205/240] - Loss_D: 1.3597, Loss_G: 15.4232
 Epoch [206/240] - Loss_D: 1.0046, Loss_G: 16.4331
 Epoch [207/240] - Loss_D: 2.125, Loss_G: 14.1366
 Epoch [208/240] - Loss_D: 1.3874, Loss_G: 14.3231
-
+Epoch [209/220] - Loss_D: 1.7741, Loss_G: 14.3973
+Epoch [210/220] - Loss_D: 2.6181, Loss_G: 13.8393
+Epoch [211/220] - Loss_D: 1.0935, Loss_G: 13.4297
+Epoch [212/220] - Loss_D: 1.5336, Loss_G: 11.8909
+Epoch [213/220] - Loss_D: 2.2581, Loss_G: 14.1818
+Epoch [214/220] - Loss_D: 2.1315, Loss_G: 13.3003
+Epoch [215/220] - Loss_D: 2.1659, Loss_G: 14.3695
+Epoch [216/220] - Loss_D: 1.9126, Loss_G: 14.0021
+Epoch [217/220] - Loss_D: 1.6184, Loss_G: 13.871
+Epoch [218/220] - Loss_D: 2.1683, Loss_G: 12.5412
+Epoch [219/220] - Loss_D: 1.9423, Loss_G: 12.2333
+Epoch [220/220] - Loss_D: 1.548, Loss_G: 15.1304
+Saved Checkpoint at Epoch :  220
+Average Loss_D :  2.0209050000000006
+Average Loss_G :  12.591039999999998
 
 
 
