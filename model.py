@@ -44,8 +44,8 @@ model.to(DEVICE)
 model = torch.compile(model)
 
 base_path = "/"
-dataset_root_dir = "v_2"
-split_save_path = "/split.json"
+dataset_root_dir = "/content/v_2"
+split_save_path = "split.json"
 
 train_transforms = v2.Compose(
     [
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     dataset.save_split(output_file=split_save_path)
 
     dataloader = DataLoader(
-        dataset, batch_size=PARAMS["batch_size"], shuffle=True, num_workers=4
+        dataset, batch_size=PARAMS["batch_size"], shuffle=True, num_workers=2
     )
 
     gen_ckpt = base_path + "pix2pix_gen_220.pth"
