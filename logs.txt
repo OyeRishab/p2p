@@ -1,0 +1,248 @@
+Epoch [0/220] - Loss_D: 12.1863, Loss_G: 31.2784
+Epoch [1/220] - Loss_D: 13.9761, Loss_G: 34.0252
+Epoch [2/220] - Loss_D: 13.159, Loss_G: 34.4081
+Epoch [3/220] - Loss_D: 15.0626, Loss_G: 31.1985
+Epoch [4/220] - Loss_D: 14.2594, Loss_G: 30.7636
+Epoch [5/220] - Loss_D: 14.8411, Loss_G: 30.8951
+Epoch [6/220] - Loss_D: 14.0873, Loss_G: 33.5553
+Epoch [7/220] - Loss_D: 15.4665, Loss_G: 30.9698
+Epoch [8/220] - Loss_D: 13.8197, Loss_G: 30.876
+Epoch [9/220] - Loss_D: 13.5434, Loss_G: 33.7845
+Epoch [10/220] - Loss_D: 15.9578, Loss_G: 30.9797
+Epoch [11/220] - Loss_D: 15.9448, Loss_G: 35.5337
+Epoch [12/220] - Loss_D: 14.6633, Loss_G: 32.8754
+Epoch [13/220] - Loss_D: 14.6272, Loss_G: 35.9507
+Epoch [14/220] - Loss_D: 15.9791, Loss_G: 30.92
+Epoch [15/220] - Loss_D: 14.0307, Loss_G: 33.51
+Epoch [16/220] - Loss_D: 13.3508, Loss_G: 30.5203
+Epoch [17/220] - Loss_D: 15.614, Loss_G: 34.6778
+Epoch [18/220] - Loss_D: 15.1727, Loss_G: 30.0863
+Epoch [19/220] - Loss_D: 12.0582, Loss_G: 35.8104
+Epoch [20/220] - Loss_D: 14.4266, Loss_G: 30.0032
+Saved Checkpoint at Epoch :  20
+Average Loss_D :  15.1113
+Average Loss_G :  34.1311
+Epoch [21/220] - Loss_D: 13.3946, Loss_G: 30.8068
+Epoch [22/220] - Loss_D: 15.6751, Loss_G: 33.0585
+Epoch [23/220] - Loss_D: 13.725, Loss_G: 30.743
+Epoch [24/220] - Loss_D: 15.8703, Loss_G: 35.7762
+Epoch [25/220] - Loss_D: 15.55, Loss_G: 30.6491
+Epoch [26/220] - Loss_D: 13.5359, Loss_G: 31.1024
+Epoch [27/220] - Loss_D: 15.3516, Loss_G: 33.4815
+Epoch [28/220] - Loss_D: 15.5218, Loss_G: 34.0287
+Epoch [29/220] - Loss_D: 14.6435, Loss_G: 34.3953
+Epoch [30/220] - Loss_D: 14.6806, Loss_G: 31.5043
+Epoch [31/220] - Loss_D: 14.1202, Loss_G: 31.8643
+Epoch [32/220] - Loss_D: 15.7005, Loss_G: 30.5672
+Epoch [33/220] - Loss_D: 15.8112, Loss_G: 30.5253
+Epoch [34/220] - Loss_D: 14.2786, Loss_G: 35.7263
+Epoch [35/220] - Loss_D: 13.8898, Loss_G: 30.8129
+Epoch [36/220] - Loss_D: 12.0783, Loss_G: 34.3493
+Epoch [37/220] - Loss_D: 13.5435, Loss_G: 30.9901
+Epoch [38/220] - Loss_D: 14.8016, Loss_G: 34.5062
+Epoch [39/220] - Loss_D: 12.756, Loss_G: 32.831
+Epoch [40/220] - Loss_D: 14.4171, Loss_G: 31.7295
+Saved Checkpoint at Epoch :  40
+Average Loss_D :  14.46726
+Average Loss_G :  32.47239
+Epoch [41/220] - Loss_D: 10.3832, Loss_G: 29.0192
+Epoch [42/220] - Loss_D: 10.0218, Loss_G: 27.9604
+Epoch [43/220] - Loss_D: 11.7427, Loss_G: 29.8607
+Epoch [44/220] - Loss_D: 11.355, Loss_G: 26.0032
+Epoch [45/220] - Loss_D: 10.4526, Loss_G: 29.4409
+Epoch [46/220] - Loss_D: 10.2192, Loss_G: 25.9274
+Epoch [47/220] - Loss_D: 10.0355, Loss_G: 25.1233
+Epoch [48/220] - Loss_D: 10.6408, Loss_G: 25.4181
+Epoch [49/220] - Loss_D: 11.5934, Loss_G: 28.6771
+Epoch [50/220] - Loss_D: 11.7634, Loss_G: 27.5615
+Epoch [51/220] - Loss_D: 10.5574, Loss_G: 29.633
+Epoch [52/220] - Loss_D: 10.8353, Loss_G: 25.9053
+Epoch [53/220] - Loss_D: 11.9248, Loss_G: 28.2696
+Epoch [54/220] - Loss_D: 10.1033, Loss_G: 25.3467
+Epoch [55/220] - Loss_D: 10.3903, Loss_G: 27.5184
+Epoch [56/220] - Loss_D: 11.2109, Loss_G: 26.137
+Epoch [57/220] - Loss_D: 11.4725, Loss_G: 29.1985
+Epoch [58/220] - Loss_D: 11.7005, Loss_G: 27.8558
+Epoch [59/220] - Loss_D: 10.0197, Loss_G: 26.5747
+Epoch [60/220] - Loss_D: 10.9869, Loss_G: 27.8559
+Saved Checkpoint at Epoch :  60
+Average Loss_D :  11.372475
+Average Loss_G :  28.842365000000008
+Epoch [61/220] - Loss_D: 11.8162, Loss_G: 27.3778
+Epoch [62/220] - Loss_D: 11.2986, Loss_G: 25.6247
+Epoch [63/220] - Loss_D: 10.4452, Loss_G: 25.1166
+Epoch [64/220] - Loss_D: 11.9635, Loss_G: 27.6961
+Epoch [65/220] - Loss_D: 11.767, Loss_G: 25.3595
+Epoch [66/220] - Loss_D: 10.0342, Loss_G: 26.4179
+Epoch [67/220] - Loss_D: 10.4095, Loss_G: 25.2376
+Epoch [68/220] - Loss_D: 10.7774, Loss_G: 25.8392
+Epoch [69/220] - Loss_D: 11.3375, Loss_G: 28.8835
+Epoch [70/220] - Loss_D: 10.3899, Loss_G: 25.6809
+Epoch [71/220] - Loss_D: 10.2071, Loss_G: 29.1407
+Epoch [72/220] - Loss_D: 10.5123, Loss_G: 26.6086
+Epoch [73/220] - Loss_D: 10.3097, Loss_G: 25.995
+Epoch [74/220] - Loss_D: 11.1656, Loss_G: 26.102
+Epoch [75/220] - Loss_D: 10.0706, Loss_G: 26.1667
+Epoch [76/220] - Loss_D: 10.276, Loss_G: 27.0624
+Epoch [77/220] - Loss_D: 10.1609, Loss_G: 28.7552
+Epoch [78/220] - Loss_D: 10.9195, Loss_G: 27.6929
+Epoch [79/220] - Loss_D: 11.6945, Loss_G: 28.4341
+Epoch [80/220] - Loss_D: 10.8821, Loss_G: 28.4661
+Saved Checkpoint at Epoch :  80
+Average Loss_D :  10.821865
+Average Loss_G :  26.882875000000002
+Epoch [80/220] - Loss_D: 6.0918, Loss_G: 26.8664
+Epoch [81/220] - Loss_D: 7.1598, Loss_G: 22.9153
+Epoch [82/220] - Loss_D: 8.6618, Loss_G: 19.3108
+Epoch [83/220] - Loss_D: 7.5668, Loss_G: 25.4212
+Epoch [84/220] - Loss_D: 7.6564, Loss_G: 23.4355
+Epoch [85/220] - Loss_D: 8.8525, Loss_G: 21.2609
+Epoch [86/220] - Loss_D: 7.2713, Loss_G: 26.6942
+Epoch [87/220] - Loss_D: 8.2993, Loss_G: 18.9706
+Epoch [88/220] - Loss_D: 6.2608, Loss_G: 26.4258
+Epoch [89/220] - Loss_D: 7.8679, Loss_G: 22.1426
+Epoch [90/220] - Loss_D: 5.88, Loss_G: 19.2129
+Epoch [91/220] - Loss_D: 6.4832, Loss_G: 17.6557
+Epoch [92/220] - Loss_D: 7.5153, Loss_G: 20.6649
+Epoch [93/220] - Loss_D: 6.5989, Loss_G: 21.0907
+Epoch [94/220] - Loss_D: 9.5821, Loss_G: 23.8049
+Epoch [95/220] - Loss_D: 6.1585, Loss_G: 23.2546
+Epoch [96/220] - Loss_D: 7.0686, Loss_G: 18.9748
+Epoch [97/220] - Loss_D: 5.9853, Loss_G: 18.0655
+Epoch [98/220] - Loss_D: 6.3363, Loss_G: 21.8081
+Epoch [99/220] - Loss_D: 7.543, Loss_G: 24.1057
+Epoch [100/220] - Loss_D: 5.1263, Loss_G: 23.178
+Saved Checkpoint at Epoch :  100
+Average Loss_D :  7.498295000000001
+Average Loss_G :  23.262954999999998
+Epoch [101/220] - Loss_D: 9.6319, Loss_G: 24.5929
+Epoch [102/220] - Loss_D: 6.0044, Loss_G: 26.2969
+Epoch [103/220] - Loss_D: 9.3804, Loss_G: 24.8949
+Epoch [104/220] - Loss_D: 9.4569, Loss_G: 17.9939
+Epoch [105/220] - Loss_D: 5.926, Loss_G: 21.879
+Epoch [106/220] - Loss_D: 7.7294, Loss_G: 22.4479
+Epoch [107/220] - Loss_D: 8.3371, Loss_G: 23.665
+Epoch [108/220] - Loss_D: 5.3673, Loss_G: 19.7654
+Epoch [109/220] - Loss_D: 5.8586, Loss_G: 18.458
+Epoch [110/220] - Loss_D: 7.271, Loss_G: 26.1764
+Epoch [111/220] - Loss_D: 7.6362, Loss_G: 18.8188
+Epoch [112/220] - Loss_D: 5.4708, Loss_G: 17.0001
+Epoch [113/220] - Loss_D: 9.4909, Loss_G: 20.8601
+Epoch [114/220] - Loss_D: 8.7425, Loss_G: 20.7851
+Epoch [115/220] - Loss_D: 7.6171, Loss_G: 18.84
+Epoch [116/220] - Loss_D: 6.3367, Loss_G: 17.7916
+Epoch [117/220] - Loss_D: 7.1943, Loss_G: 22.8008
+Epoch [118/220] - Loss_D: 9.3959, Loss_G: 17.448
+Epoch [119/220] - Loss_D: 8.9372, Loss_G: 17.2567
+Epoch [120/220] - Loss_D: 8.3756, Loss_G: 19.2607
+Saved Checkpoint at Epoch :  120
+Average Loss_D :  7.708009999999999
+Average Loss_G :  20.851609999999997
+Epoch [120/220] - Loss_D: 4.9427, Loss_G: 20.5866
+Epoch [121/220] - Loss_D: 0.962, Loss_G: 18.9201
+Epoch [122/220] - Loss_D: 0.3653, Loss_G: 20.589
+Epoch [123/220] - Loss_D: 2.3294, Loss_G: 18.6089
+Epoch [124/220] - Loss_D: 0.9173, Loss_G: 20.105
+Epoch [125/220] - Loss_D: 0.4602, Loss_G: 18.0716
+Epoch [126/220] - Loss_D: 2.3125, Loss_G: 21.6913
+Epoch [127/220] - Loss_D: 2.9642, Loss_G: 17.2385
+Epoch [128/220] - Loss_D: 4.9088, Loss_G: 18.6657
+Epoch [129/220] - Loss_D: 4.7091, Loss_G: 20.2287
+Epoch [130/220] - Loss_D: 3.9407, Loss_G: 19.6739
+Epoch [131/220] - Loss_D: 2.3629, Loss_G: 20.6104
+Epoch [132/220] - Loss_D: 4.4569, Loss_G: 20.3922
+Epoch [133/220] - Loss_D: 1.0747, Loss_G: 18.2653
+Epoch [134/220] - Loss_D: 2.6881, Loss_G: 17.117
+Epoch [135/220] - Loss_D: 2.8542, Loss_G: 19.1124
+Epoch [136/220] - Loss_D: 3.0573, Loss_G: 18.5715
+Epoch [137/220] - Loss_D: 3.0259, Loss_G: 17.1027
+Epoch [138/220] - Loss_D: 3.4311, Loss_G: 19.5132
+Epoch [139/220] - Loss_D: 2.5597, Loss_G: 21.4092
+Epoch [140/220] - Loss_D: 4.6732, Loss_G: 19.1093
+Saved Checkpoint at Epoch :  140
+Average Loss_D :  2.94981
+Average Loss_G :  20.279125
+Epoch [141/220] - Loss_D: 3.1972, Loss_G: 20.1272
+Epoch [142/220] - Loss_D: 2.4926, Loss_G: 20.0451
+Epoch [143/220] - Loss_D: 3.1285, Loss_G: 19.1981
+Epoch [144/220] - Loss_D: 3.0421, Loss_G: 21.5893
+Epoch [145/220] - Loss_D: 4.2401, Loss_G: 20.3455
+Epoch [146/220] - Loss_D: 0.0468, Loss_G: 18.6686
+Epoch [147/220] - Loss_D: 1.2488, Loss_G: 19.1549
+Epoch [148/220] - Loss_D: 3.9845, Loss_G: 20.1365
+Epoch [149/220] - Loss_D: 0.4383, Loss_G: 18.4453
+Epoch [150/220] - Loss_D: 4.6903, Loss_G: 18.5864
+Epoch [151/220] - Loss_D: 0.4065, Loss_G: 20.5646
+Epoch [152/220] - Loss_D: 2.2897, Loss_G: 21.4144
+Epoch [153/220] - Loss_D: 3.8267, Loss_G: 20.7476
+Epoch [154/220] - Loss_D: 2.9304, Loss_G: 18.163
+Epoch [155/220] - Loss_D: 1.6878, Loss_G: 21.4013
+Epoch [156/220] - Loss_D: 4.1253, Loss_G: 20.4031
+Epoch [157/220] - Loss_D: 3.8667, Loss_G: 18.0398
+Epoch [158/220] - Loss_D: 3.4151, Loss_G: 17.1776
+Epoch [159/220] - Loss_D: 4.4195, Loss_G: 18.8772
+Epoch [160/220] - Loss_D: 1.1274, Loss_G: 20.5756
+Saved Checkpoint at Epoch :  160
+Average Loss_D :  2.7302150000000007
+Average Loss_G :  19.683055000000003
+Epoch [160/220] - Loss_D: 1.0546, Loss_G: 11.981
+Epoch [161/220] - Loss_D: 1.3006, Loss_G: 15.1891
+Epoch [162/220] - Loss_D: 1.8977, Loss_G: 11.5214
+Epoch [163/220] - Loss_D: 2.6487, Loss_G: 17.5232
+Epoch [164/220] - Loss_D: 2.7373, Loss_G: 12.1014
+Epoch [165/220] - Loss_D: 1.0575, Loss_G: 13.9309
+Epoch [166/220] - Loss_D: 2.8176, Loss_G: 16.0571
+Epoch [167/220] - Loss_D: 1.896, Loss_G: 17.2228
+Epoch [168/220] - Loss_D: 2.5841, Loss_G: 16.5635
+Epoch [169/220] - Loss_D: 1.872, Loss_G: 17.4718
+Epoch [170/220] - Loss_D: 1.2234, Loss_G: 16.0821
+Epoch [171/220] - Loss_D: 2.1617, Loss_G: 16.6286
+Epoch [172/220] - Loss_D: 2.7283, Loss_G: 13.924
+Epoch [173/220] - Loss_D: 2.548, Loss_G: 17.7271
+Epoch [174/220] - Loss_D: 1.0094, Loss_G: 17.381
+Epoch [175/220] - Loss_D: 1.4686, Loss_G: 11.905
+Epoch [176/220] - Loss_D: 1.2655, Loss_G: 15.5414
+Epoch [177/220] - Loss_D: 2.1994, Loss_G: 14.3617
+Epoch [178/220] - Loss_D: 2.1693, Loss_G: 13.3428
+Epoch [179/220] - Loss_D: 1.7168, Loss_G: 13.848
+Epoch [180/220] - Loss_D: 1.3771, Loss_G: 14.121
+Saved Checkpoint at Epoch :  180
+Average Loss_D :  1.9866799999999998
+Average Loss_G :  15.721245
+Epoch [181/220] - Loss_D: 2.498, Loss_G: 16.1809
+Epoch [182/220] - Loss_D: 1.7172, Loss_G: 13.7993
+Epoch [183/220] - Loss_D: 2.279, Loss_G: 16.5292
+Epoch [184/220] - Loss_D: 1.1875, Loss_G: 13.4551
+Epoch [185/220] - Loss_D: 2.9802, Loss_G: 17.8557
+Epoch [186/220] - Loss_D: 2.74, Loss_G: 11.8902
+Epoch [187/220] - Loss_D: 1.8944, Loss_G: 11.2882
+Epoch [188/220] - Loss_D: 2.3974, Loss_G: 12.6356
+Epoch [189/220] - Loss_D: 1.7741, Loss_G: 17.3973
+Epoch [190/220] - Loss_D: 2.6181, Loss_G: 17.8393
+Epoch [191/220] - Loss_D: 1.0935, Loss_G: 13.4297
+Epoch [192/220] - Loss_D: 1.5336, Loss_G: 11.8909
+Epoch [193/220] - Loss_D: 2.2581, Loss_G: 14.1818
+Epoch [194/220] - Loss_D: 2.1315, Loss_G: 13.3003
+Epoch [195/220] - Loss_D: 2.1659, Loss_G: 16.3695
+Epoch [196/220] - Loss_D: 1.9126, Loss_G: 15.0019
+Epoch [197/220] - Loss_D: 1.6184, Loss_G: 13.871
+Epoch [198/220] - Loss_D: 2.1683, Loss_G: 12.5412
+Epoch [199/220] - Loss_D: 1.9423, Loss_G: 17.2333
+Epoch [200/220] - Loss_D: 1.548, Loss_G: 15.1304
+Saved Checkpoint at Epoch :  200
+Average Loss_D :  2.0229050000000006
+Average Loss_G :  14.591039999999998
+Epoch [201/240] - Loss_D: 2.1488, Loss_G: 17.3888
+Epoch [202/240] - Loss_D: 1.3846, Loss_G: 11.6389
+Epoch [203/240] - Loss_D: 1.2431, Loss_G: 12.8078
+Epoch [204/240] - Loss_D: 1.6254, Loss_G: 13.4211
+Epoch [205/240] - Loss_D: 1.3597, Loss_G: 15.4232
+Epoch [206/240] - Loss_D: 1.0046, Loss_G: 16.4331
+Epoch [207/240] - Loss_D: 2.125, Loss_G: 14.1366
+Epoch [208/240] - Loss_D: 1.3874, Loss_G: 14.3231
+
+
+
+
+
+
