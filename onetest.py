@@ -1,13 +1,11 @@
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
-from torchvision import transforms
 from torchvision.transforms import v2
 from pix import Pix2Pix
 from split import Sentinel
 from torch.utils.data import DataLoader
 from PIL import Image
-from metrics import calculate_ssim, calculate_psnr, calculate_sam
 
 PARAMS = {
     "netD": "patch",
@@ -29,6 +27,7 @@ SEED = PARAMS["seed"]
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 torch.manual_seed(SEED)
 
+# Initialize and load the Pix2Pix model
 model = Pix2Pix(
     is_train=True,
     netD=PARAMS["netD"],
@@ -42,73 +41,13 @@ model = Pix2Pix(
     beta1=PARAMS["beta1"],
     beta2=PARAMS["beta2"],
 )
-
 gen_ckpt = "/content/drive/MyDrive/pix2pix_gen_220.pth"
-model.gen.load_state_dict(
-    torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
-)
-
-disc_ckpt = "/content/drive/MyDrive/pix2pix_disc_220.pth"
-model.disc.load_state_dict(
-    torch.load(disc_ckpt, map_location=DEVICE, weights_only=True), strict=False
-)
-
+model.gen.load_state_dict(torch.load(gen_ckpt, map_location=DEVICE))
 model.to(DEVICE)
 model.eval()
-print("Loaded succesfully!")
+print("Model loaded successfully!")
 
-root_dir = "/content/v_2"
-split_save_path = "meta.json"
-# Load the custom dataset
-train_transforms = v2.Compose(
-    [
-        v2.ToImage(),
-        v2.ToDtype(torch.float32, scale=True),
-        v2.Normalize(mean=[0.5], std=[0.5]),
-    ]
-)
-
-dataset = Sentinel(
-    root_dir=root_dir,
-    split_type="test",
-    transform=train_transforms,
-    split_mode="random",
-    split_ratio=(0.8, 0.1, 0.1),
-    seed=SEED,
-)
-
-dataloader = DataLoader(
-    dataset, batch_size=PARAMS["batch_size"], shuffle=True, num_workers=2
-)
-
-
-def scale_and_convert(tensor):
-    # Images are in the range of [-1,1]
-    # So, scale back from [-1, 1] to [0, 1]
-    tensor = (tensor + 1) / 2
-    return (
-        tensor.clamp(0, 1).cpu().numpy()
-    )  # Ensures values are within [0, 1] and move to CPU
-
-
-real_images, target_images = next(iter(dataloader))
-real_images, target_images = real_images.to(DEVICE), target_images.to(DEVICE)
-
-out = model.get_current_visuals(real_images, target_images)
-real_images, target_images, generated_images = out["real"], out["target"], out["fake"]
-
-# Save the outputs to a file
-
-
-# Function to load and preprocess a single image
-def load_and_preprocess_image(image_path, transform):
-    image = Image.open(image_path).convert("RGB")
-    image = transform(image)
-    image = image.unsqueeze(0)  # Add batch dimension
-    return image
-
-
-# Define the transform for the input image
+# Define transforms
 input_transform = v2.Compose(
     [
         v2.ToImage(),
@@ -117,32 +56,84 @@ input_transform = v2.Compose(
     ]
 )
 
-# Load and preprocess the input image
-image_path = "test.jpg"
-input_image = load_and_preprocess_image(image_path, input_transform)
-input_image = input_image.to(DEVICE)
+
+# Function to load and preprocess the image
+def load_and_preprocess_image(image_path, transform):
+    image = Image.open(image_path).convert("RGB")
+    image = transform(image)
+    image = image.unsqueeze(0)  # Add batch dimension
+    return image
+
+
+# Function to scale and convert tensor to NumPy array
+def scale_and_convert(tensor):
+    tensor = tensor.cpu().detach()
+    tensor = (tensor + 1) / 2  # Rescale to [0,1]
+    np_array = tensor.numpy()
+    return np_array
+
+
+# Load the input SAR image
+image_path = "test_sar_image.jpg"
+input_image = load_and_preprocess_image(image_path, input_transform).to(DEVICE)
 
 # Generate the output using the model
 with torch.no_grad():
-    generated_image = model.gen(input_image)
+    generated_image = model.generate(input_image, is_scaled=True).to(DEVICE)
 
-# Convert the tensors to numpy arrays for visualization
+# Convert input_image and generated_image to appropriate scales
 input_image_np = scale_and_convert(input_image)
 generated_image_np = scale_and_convert(generated_image)
 
-# Plot the input and generated images
-fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+# Convert input_image to grayscale
+grayscale_image = input_image.mean(dim=1, keepdim=True)
 
-# Plot input image
-axes[0].imshow(np.transpose(input_image_np[0], (1, 2, 0)))
-axes[0].set_title("Input Image")
-axes[0].axis("off")
 
-# Plot generated image
-axes[1].imshow(np.transpose(generated_image_np[0], (1, 2, 0)))
-axes[1].set_title("Generated Image")
-axes[1].axis("off")
+# Apply edge detection using Sobel filters
+def sobel_edge_detection(image):
+    sobel_kernel_x = (
+        torch.tensor(
+            [[1, 0, -1], [2, 0, -2], [1, 0, -1]],
+            dtype=torch.float32,
+            device=image.device,
+        )
+        .unsqueeze(0)
+        .unsqueeze(0)
+    )
+    sobel_kernel_y = (
+        torch.tensor(
+            [[1, 2, 1], [0, 0, 0], [-1, -2, -1]],
+            dtype=torch.float32,
+            device=image.device,
+        )
+        .unsqueeze(0)
+        .unsqueeze(0)
+    )
+    edges_x = torch.nn.functional.conv2d(image, sobel_kernel_x, padding=1)
+    edges_y = torch.nn.functional.conv2d(image, sobel_kernel_y, padding=1)
+    edge_map = torch.sqrt(edges_x**2 + edges_y**2)
+    return edge_map
 
+
+edge_map = sobel_edge_detection(grayscale_image)
+
+# Normalize edge_map to [0,1]
+edge_map = (edge_map - edge_map.min()) / (edge_map.max() - edge_map.min())
+
+# Expand edge_map to 3 channels
+edge_map_rgb = edge_map.repeat(1, 3, 1, 1)
+
+# Blend edge_map with generated_image
+alpha = 0.5  # Blending factor
+blended_image = generated_image * (1 - alpha) + edge_map_rgb * alpha
+
+# Convert blended_image to NumPy array
+blended_image_np = scale_and_convert(blended_image)
+
+# Plot and save the resulting blended image
+plt.imshow(np.transpose(blended_image_np[0], (1, 2, 0)))
+plt.title("Blended Image")
+plt.axis("off")
 plt.tight_layout()
-plt.savefig("test_output_image.png")
-plt.close(fig)
+plt.savefig("blended_output_image.png")
+plt.show()
