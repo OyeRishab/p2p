@@ -1,3 +1,4 @@
+import os
 import torch
 from pix import Pix2Pix
 from split import Sentinel
@@ -69,6 +70,18 @@ if __name__ == "__main__":
         dataset, batch_size=PARAMS["batch_size"], shuffle=True, num_workers=4
     )
 
+    gen_ckpt = base_path + "pix2pix_gen_220.pth"
+    disc_ckpt = base_path + "pix2pix_disc_220.pth"
+
+    if os.path.exists(gen_ckpt) and os.path.exists(disc_ckpt):
+        model.gen.load_state_dict(
+            torch.load(gen_ckpt, map_location=DEVICE, weights_only=True), strict=False
+        )
+        model.disc.load_state_dict(
+            torch.load(disc_ckpt, map_location=DEVICE, weights_only=True), strict=False
+        )
+        print("Loaded succesfully!")
+
     # Train the model
     num_epochs = PARAMS["epochs"]
     len_batch = len(dataloader)
@@ -109,3 +122,5 @@ if __name__ == "__main__":
                 gen_opt_path="pix2pix_gen_opt.pth", disc_opt_path="pix2pix_disc_opt.pth"
             )
             print(f"Model saved at epoch {epoch}")
+            print("Average Loss_D : ", loss_D)
+            print("Average Loss_G : ", loss_G)
