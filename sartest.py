@@ -135,9 +135,18 @@ def divide_image(image, patch_size):
 def stitch_images(patches, image_shape, patch_size):
     _, _, h, w = image_shape
     stitched_image = torch.zeros((1, 3, h, w), device=patches[0].device)
+    weight_map = torch.zeros((1, 3, h, w), device=patches[0].device)
     idx = 0
     rows = h // patch_size
     cols = w // patch_size
+
+    # Create a smooth blending mask for each patch
+    y, x = torch.meshgrid(
+        torch.linspace(0, 1, patch_size, device=patches[0].device),
+        torch.linspace(0, 1, patch_size, device=patches[0].device),
+    )
+    mask = (1 - y) * (1 - x) * y * x  # Feathering weights
+    mask = mask.unsqueeze(0).repeat(3, 1, 1)  # Apply to 3 channels (RGB)
 
     for i in range(rows):
         for j in range(cols):
@@ -151,11 +160,17 @@ def stitch_images(patches, image_shape, patch_size):
                 patch_h = y_end - y_start
                 patch_w = x_end - x_start
 
-                stitched_image[:, :, y_start:y_end, x_start:x_end] = curr_patch[
-                    :, :, :patch_h, :patch_w
+                # Blend patch into the stitched image
+                stitched_image[:, :, y_start:y_end, x_start:x_end] += (
+                    curr_patch[:, :, :patch_h, :patch_w] * mask[:, :patch_h, :patch_w]
+                )
+                weight_map[:, :, y_start:y_end, x_start:x_end] += mask[
+                    :, :patch_h, :patch_w
                 ]
                 idx += 1
 
+    # Normalize to avoid overlapping areas becoming overly bright
+    stitched_image /= weight_map.clamp(min=1e-8)
     return stitched_image
 
 
