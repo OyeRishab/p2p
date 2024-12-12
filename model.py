@@ -82,6 +82,14 @@ if __name__ == "__main__":
         )
         print("Loaded succesfully!")
 
+    load_gen_opt_path = base_path + "pix2pix_gen_opt.pth"
+    load_disc_opt_path = base_path + "pix2pix_disc_opt.pth"
+
+    if os.path.exists(load_gen_opt_path) and os.path.exists(load_disc_opt_path):
+        model.optimizer_G.load_state_dict(torch.load(load_gen_opt_path))
+        model.optimizer_D.load_state_dict(torch.load(load_disc_opt_path))
+        print("Loaded saved optimizers.")
+
     # Train the model
     num_epochs = PARAMS["epochs"]
     len_batch = len(dataloader)
