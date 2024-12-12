@@ -57,11 +57,6 @@ class Pix2Pix(nn.Module):
 
     @staticmethod
     def weights_init(m):
-        """Initialize network weights.
-
-        Args:
-            m: network module
-        """
         if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
             nn.init.normal_(m.weight, 0.0, 0.02)
             if hasattr(m, "bias") and m.bias is not None:
@@ -76,10 +71,7 @@ class Pix2Pix(nn.Module):
         target_images: torch.Tensor,
         fake_images: torch.Tensor,
     ):
-        """Prepare discriminator inputs based on conditional/unconditional setup."""
         if self.is_CGAN:
-            # Conditional GANs need both input and output together,
-            # Therefore, the total input channel is c_in+c_out
             real_AB = torch.cat([real_images, target_images], dim=1)
             fake_AB = torch.cat([real_images, fake_images.detach()], dim=1)
         else:
@@ -88,10 +80,7 @@ class Pix2Pix(nn.Module):
         return real_AB, fake_AB
 
     def _get_gen_inputs(self, real_images: torch.Tensor, fake_images: torch.Tensor):
-        """Prepare discriminator inputs based on conditional/unconditional setup."""
         if self.is_CGAN:
-            # Conditional GANs need both input and output together,
-            # Therefore, the total input channel is c_in+c_out
             fake_AB = torch.cat([real_images, fake_images], dim=1)
         else:
             fake_AB = fake_images
@@ -103,17 +92,6 @@ class Pix2Pix(nn.Module):
         target_images: torch.Tensor,
         fake_images: torch.Tensor,
     ):
-        """Discriminator forward/backward pass.
-
-        Args:
-            real_images: Input images
-            target_images: Ground truth images
-            fake_images: Generated images
-
-        Returns:
-            Discriminator loss value
-        """
-        # Prepare inputs
         real_AB, fake_AB = self._get_disc_inputs(
             real_images, target_images, fake_images
         )
@@ -138,17 +116,6 @@ class Pix2Pix(nn.Module):
         target_images: torch.Tensor,
         fake_images: torch.Tensor,
     ):
-        """Discriminator forward/backward pass.
-
-        Args:
-            real_images: Input images
-            target_images: Ground truth images
-            fake_images: Generated images
-
-        Returns:
-            Discriminator loss value
-        """
-        # Prepare input
         fake_AB = self._get_gen_inputs(real_images, fake_images)
 
         # Forward pass through the discriminator
@@ -166,16 +133,6 @@ class Pix2Pix(nn.Module):
         }
 
     def train_step(self, real_images: torch.Tensor, target_images: torch.Tensor):
-        """Performs a single training step.
-
-        Args:
-            real_images: Input images
-            target_images: Ground truth images
-
-        Returns:
-            Dictionary containing all loss values from this step
-        """
-        # Forward pass through the generator
         fake_images = self.forward(real_images)
 
         # Update discriminator
@@ -198,15 +155,6 @@ class Pix2Pix(nn.Module):
         return {"loss_D": lossD.item(), **G_losses}
 
     def validation_step(self, real_images: torch.Tensor, target_images: torch.Tensor):
-        """Performs a single validation step.
-
-        Args:
-            real_images: Input images
-            target_images: Ground truth images
-
-        Returns:
-            Dictionary containing all loss values from this step
-        """
         with torch.no_grad():
             # Forward pass through the generator
             fake_images = self.forward(real_images)
@@ -242,31 +190,11 @@ class Pix2Pix(nn.Module):
         return generated_images
 
     def save_model(self, gen_path: str, disc_path: str = None):
-        """
-        Saves the generator model's state dictionary to the specified path.
-        If in training mode and a discriminator path is provided, saves the
-        discriminator model's state dictionary as well.
-
-        Args:
-            gen_path (str): The file path where the generator model's state dictionary will be saved.
-            disc_path (str, optional): The file path where the discriminator model's state dictionary will be saved. Defaults to None.
-        """
         torch.save(self.gen.state_dict(), gen_path)
         if self.is_train and disc_path is not None:
             torch.save(self.disc.state_dict(), disc_path)
 
     def load_model(self, gen_path: str, disc_path: str = None, device: str = None):
-        """
-        Loads the generator and optionally the discriminator model from the specified file paths.
-
-        Args:
-            gen_path (str): Path to the generator model file.
-            disc_path (str, optional): Path to the discriminator model file. Defaults to None.
-            device (torch.device, optional): The device on which to load the models. If None, the device of the model's parameters will be used. Defaults to None.
-
-        Returns:
-            None
-        """
         device = device if device else next(self.gen.parameters()).device
         self.gen.load_state_dict(
             torch.load(gen_path, map_location=device, weights_only=True), strict=False
@@ -279,17 +207,6 @@ class Pix2Pix(nn.Module):
             )
 
     def save_optimizer(self, gen_opt_path: str, disc_opt_path: str = None):
-        """
-        Save the state of the optimizers to the specified file paths.
-        Args:
-            gen_opt_path (str): The file path to save the generator optimizer state.
-            disc_opt_path (str, optional): The file path to save the discriminator optimizer state. Defaults to None.
-        Notes:
-            This method saves the state of the generator optimizer to the specified `gen_opt_path`.
-            If `disc_opt_path` is provided, it also saves the state of the discriminator optimizer to the specified path.
-            This method only works if the model is in training mode (`is_train` is True). If the model is not in training mode,
-            it will print a message indicating that the model is not initialized in train mode.
-        """
         if self.is_train:
             torch.save(self.gen_optimizer.state_dict(), gen_opt_path)
             if disc_opt_path is not None:
@@ -298,17 +215,6 @@ class Pix2Pix(nn.Module):
             print("Model is initialized in train mode. See `is_train` for more.")
 
     def load_optimizer(self, gen_opt_path: str, disc_opt_path: str = None):
-        """
-        Loads the optimizer states for the generator and discriminator from the specified file paths.
-        Args:
-            gen_opt_path (str): Path to the file containing the generator optimizer state.
-            disc_opt_path (str, optional): Path to the file containing the discriminator optimizer state. Defaults to None.
-        Notes:
-            This method saves the state of the generator optimizer to the specified `gen_opt_path`.
-            If `disc_opt_path` is provided, it also saves the state of the discriminator optimizer to the specified path.
-            This method only works if the model is in training mode (`is_train` is True). If the model is not in training mode,
-            it will print a message indicating that the model is not initialized in train mode.
-        """
         if self.is_train:
             self.gen_optimizer.load_state_dict(
                 torch.load(gen_opt_path, weights_only=True)
@@ -323,15 +229,6 @@ class Pix2Pix(nn.Module):
     def get_current_visuals(
         self, real_images: torch.Tensor, target_images: torch.Tensor
     ):
-        """Return visualization images.
-
-        Args:
-            real_images: Input images
-            target_images: Ground truth images
-
-        Returns:
-            Dictionary containing input, target and generated images
-        """
         with torch.no_grad():
             fake_images = self.gen(real_images)
         return {"real": real_images, "fake": fake_images, "target": target_images}

@@ -146,13 +146,3 @@ axes[1].axis("off")
 plt.tight_layout()
 plt.savefig("test_output_image.png")
 plt.close(fig)
-
-# Calculate the SSIM, PSNR, and SAM between the given image and the generated image
-ssim = calculate_ssim(input_image, generated_image)
-psnr = calculate_psnr(input_image, generated_image)
-sam = calculate_sam(input_image, generated_image)
-
-
-print(f"SSIM: {ssim:.4f}")
-print(f"PSNR: {psnr:.4f}")
-print(f"SAM: {sam:.4f}")
